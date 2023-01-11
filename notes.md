@@ -1,15 +1,24 @@
 # Writing Your First Django App
 By Django Team
 
+Django Tutorial:
 start: 12/18/2022
+end: 12/22/2022
+
+User Authentication:
+start: 01/04/2022
 end: 
 
-Sessions
+Sessions Django Tutorial:
 1. 12/18/2022
 2. 12/19/2022
 3. 12/20/2022
 4. 12/21/2022
 5. 12/22/2022
+
+Sessions User Authentication:
+1. 01/04/2022
+2. 01/10/2022
 
 This notes will include only simple notes about each entry or stuff that I learn about this tool.
 Or stuff that I cant search with 2 or 3 googles searches.
@@ -135,3 +144,116 @@ After that you can change it some how, and add others in another way.
 
 With this, this is not over. I still have, and will, learn a lot of Django. But by now, I can relax and see where I'm going to 
 focus by now.
+
+## Share, and Export Django Apps
+
+One of Python's main is to do Code that can be reused by anyone who can use it, everyone for that matter. 
+So a way to share and reuse our Django Apps could be by using settuptools lib. And create multiple 
+files, licences and other stuff that declares what is our Django App, so it can be compressed, shared and 
+installed via pip. There's a relative big explication about how to do it.
+
+But I think that would be best to do it on our own with the Setup Tools Docs themselfs.
+
+# Authentication In Django
+
+## Installation
+
+In order to install the minimum part of Auth of Django, we don't have to install any 
+extra apps or middleware, since Django Installs them in the normal django app preparation, 
+creation and installation.
+
+But if somehow your Django App didn't have install correctly, these are the ones that you need:
+
+Apps:
+- django.contrib.auth
+- django.contrib.contenttypes
+
+Middleware:
+- django.contrib.sessions.middleware.SessionMiddleware
+- django.contrib.auth.middleware.AutheticationMiddleware
+
+## User Objects
+
+Django Since it's inits with the Auth and others Apps. In auth module, we can 
+use the User model. Which we could modify the options and values of the User.
+Which the default are:
+- username
+- email
+- password
+- first name
+- last name
+
+The default usage of this module is using and creating superusers, admins and staff members 
+for the Django Project, which can do stuff, or just use the Django Admin.
+
+We can change the Users password, no via the DB, because every password is stored, is hashed and encrypted.
+But with different tools such as a ctl tool: 
+
+$ python3 manage.py changepassword "username"
+
+Or via a Django App, with the set_password method of a User Instance.
+We could also do, create or use one of the premade views and forms for changing the users' password
+
+We can also Authenticate the user by importing the function from auth module, and then passing the username
+and password as kargs. The function will return the User if the username and password are correct. Otherwise, None is returned.
+The most likely thing, is that You are not going to use that low level of authecation. So you would be better using LoginViews.
+
+## permissions and Authorizations
+
+Django Admin, or you could use it. Or create a permission System in your Django App. Uses permissions 
+to do CRUD operations in objects, which could be dbs tables models, dbs objects or rows. objects 
+values and so on.
+
+We can modify the permissions on Users individualy. Or we could create groups in order to give them a 
+category and order. This could be used to modify permissions in a greater scale, or divide a fancy special 
+group of users from the general users.
+
+We can also create custom permissions by getting a content type of a model with ContentType.objects' get_for_model method,
+and create a Permission object from the Permissions Model, passing the codename, the name, and the ContentType of the Model.
+
+With this, we can check the permissions of the users with has_perm method, passing the str of the permission.
+But if we add or delete a permission from the user, we should re-request the user from its model, so it has the 
+updated permissions.
+
+I didn't get what the hell is a proxy, in a Model with different permissions. But it doesnt inherit the permissions.
+
+## Authentication in Web Requests
+
+Django uses Sessions in order to authenticate users. We can 
+check this via using the request.user, checking if it is with the property
+is_authenticaded
+
+We can log the user after its authenticated, with athentication(), with login() from auth module.
+passing the user authenticated and the http request. Logout is more simple, since we only have to 
+pass the request. But be carefull, since everything saved on the session will be deleted. So if you 
+want to create a default or Anonymous user, you should set their session data after the 
+logout().
+
+We can limit our web pages, so only the logged in users can access and see some views. 
+We could do something that redirect us to log in, or trow an error by using is_authenticaded property.
+
+Or we could use a decorator for our function_views, or a MixIn for a ClassView.
+
+from auth.decorators
+@login_required is for function_views. Which redirects the user to a login view, if it's not logged in.
+We can change the url of the authentication by setting login_url parameter.
+After the user has been authenticated, it should redirect to the same view. This view url is generally 
+stored in the session variable "next", but we can change its name by passing redirect_field_name=''.
+
+If we dont set the login_url, Django will use the default /accounts/login from the settings default LOGIN_URL
+
+from auth.mixins
+LoginRequiredMixin Can be used just like it's decorator counterpart, but as a abstraction, just by passing the custom url and 
+redirect as a class parameter.
+
+We can add tests to the users to see if they are fit to get the request, we can do it with user_passes_test or UserPassesTestMixin.
+They both can take the same parameters as login_required. But it needs the test_function to be passed as well. In the 
+Mixin, you can name a method "test_func", but this can't be stacked. We could change the get_test_func to get another 
+function other than test_func.
+
+There's also a Mixin - Decorator for checking permissions, it takes a permission str, login_url and raise_exception:bool
+Everything is just like the others, and then some logic for the permission value. 
+But the raise_exception, returns a 403 (Forbidden), if the user doesn't have the permission.
+
+We can combine all of this into one big Mixin AccessMixin, where we have all of the paramters that we saw before, 
+and then more. The behaviour is: if user is denied access, trow 403. Is anonymous user is denied, send to login or 403.
