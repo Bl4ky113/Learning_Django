@@ -35,7 +35,7 @@ When you connect an App to the project App, you always have to use include()
 
 ## Config File 
 We can change our timezone by just passing the Contry Code in its variable
-We can also add or delete any app from our APP_LIST. And Remember that you can you own 
+We can also add or delete any app from our APP\_LIST. And Remember that you can you own 
 apps by passing the appname.apps.AppNameConfig Class.
 
 ## Migrate Changes to the DB and to Django
@@ -43,7 +43,7 @@ apps by passing the appname.apps.AppNameConfig Class.
 We can make any change to the Models, and stuff, but we generally have to make a migration.
 We can see this migrations by using:
 
-$ python3 manage.py sqlmigrate app_name num_migration(0001)
+$ python3 manage.py sqlmigrate app\_name num\_migration(0001)
 
 Then, it will show the SQL code to do the changes of the migration.
 
@@ -62,7 +62,7 @@ With Django.db.models we can get multiple tools to work directly with our DB, sk
 Why is this usefull? Sometimes, Python will execute twice or more actions at the same time, affecting the same 
 value in a model, the problem? This value might not update or get both of the changes made by the action. 
 This is because Python gets the value from the model, does its work and then updates it. Avoiding or not 
-refreshing the element at any moment, we could do it by using refresh_from_db() object method. 
+refreshing the element at any moment, we could do it by using refresh\_from\_db() object method. 
 
 Or we could use a tool from django.db.models "F", which will get the latest value of a object from the db directly.
 Getting all the available or made changes in the time of getting the object from the DBs. It's less than 1 ms, but 
@@ -76,7 +76,7 @@ There's a lot of room and stuff to learn from this, so maybe later. I'll just ke
 We can use from  django.test Client which let us test our app as an user were using it.
 The simpliest usage would be getting a page, and from the server response do, read, or check something.
 
-This response is just like a request, we can get the context, content, status_code and other stuff.
+This response is just like a request, we can get the context, content, status\_code and other stuff.
 
 ## Tools to learn 
 Django Testing is a complete worlds of opportunities, which can add different 
@@ -89,7 +89,7 @@ Finally something new.
 Django Static File system works just like the template system, taking the files from each app static folder.
 And sometimes needing and extra folder for the static file, like the templates: 
 
-app_name/static/app_name
+app\_name/static/app\_name
 
 Doing this avoids Django Missing or confusing two different static files, with the same name, for and on a diferent app.
 
@@ -123,13 +123,13 @@ in the inline property as a list.
 
 If StackedInLine takes a lot of screen space, we can change it. By changing it to TabularInLine
 
-We can also modify the way of the Questions Lists and Displays, by adding a list_display tuple attribute, with the 
+We can also modify the way of the Questions Lists and Displays, by adding a list\_display tuple attribute, with the 
 names of the Model attributes to be shown in order.
 Also modify the way of the data is shown in the list by going to the Model Class and adding @admin.display() decorators 
 to the properties or methods that we want to change it's display on the Django Admin
 
 To the List of Objects in the Model, we can also add Filters in order to search in the object and field selected filter.
-Also we can add search_fields, max_objects, ordering and other stuff.
+Also we can add search\_fields, max\_objects, ordering and other stuff.
 
 ## Creating a New Template for Django Admin
 
@@ -137,7 +137,7 @@ Django Admin lives, its powered and made by Django!!! Wow, right?
 We can change the template of the admin by creating one ourselves.
 
 I'm Not doing the whole process, but. We can find the admin templates dir by 
-getting from django the django.__path__. There we can find the templates dir in 
+getting from django the django.\_\_path\_\_. There we can find the templates dir in 
 django/contrib/admin/templates/
 
 After that you can change it some how, and add others in another way.
@@ -191,7 +191,7 @@ But with different tools such as a ctl tool:
 
 $ python3 manage.py changepassword "username"
 
-Or via a Django App, with the set_password method of a User Instance.
+Or via a Django App, with the set\_password method of a User Instance.
 We could also do, create or use one of the premade views and forms for changing the users' password
 
 We can also Authenticate the user by importing the function from auth module, and then passing the username
@@ -208,10 +208,10 @@ We can modify the permissions on Users individualy. Or we could create groups in
 category and order. This could be used to modify permissions in a greater scale, or divide a fancy special 
 group of users from the general users.
 
-We can also create custom permissions by getting a content type of a model with ContentType.objects' get_for_model method,
+We can also create custom permissions by getting a content type of a model with ContentType.objects' get\_for\_model method,
 and create a Permission object from the Permissions Model, passing the codename, the name, and the ContentType of the Model.
 
-With this, we can check the permissions of the users with has_perm method, passing the str of the permission.
+With this, we can check the permissions of the users with has\_perm method, passing the str of the permission.
 But if we add or delete a permission from the user, we should re-request the user from its model, so it has the 
 updated permissions.
 
@@ -221,7 +221,7 @@ I didn't get what the hell is a proxy, in a Model with different permissions. Bu
 
 Django uses Sessions in order to authenticate users. We can 
 check this via using the request.user, checking if it is with the property
-is_authenticaded
+is\_authenticaded
 
 We can log the user after its authenticated, with athentication(), with login() from auth module.
 passing the user authenticated and the http request. Logout is more simple, since we only have to 
@@ -230,30 +230,57 @@ want to create a default or Anonymous user, you should set their session data af
 logout().
 
 We can limit our web pages, so only the logged in users can access and see some views. 
-We could do something that redirect us to log in, or trow an error by using is_authenticaded property.
+We could do something that redirect us to log in, or trow an error by using is\_authenticaded property.
 
-Or we could use a decorator for our function_views, or a MixIn for a ClassView.
+Or we could use a decorator for our function\_views, or a MixIn for a ClassView.
 
 from auth.decorators
-@login_required is for function_views. Which redirects the user to a login view, if it's not logged in.
-We can change the url of the authentication by setting login_url parameter.
+@login\_required is for function\_views. Which redirects the user to a login view, if it's not logged in.
+We can change the url of the authentication by setting login\_url parameter.
 After the user has been authenticated, it should redirect to the same view. This view url is generally 
-stored in the session variable "next", but we can change its name by passing redirect_field_name=''.
+stored in the session variable "next", but we can change its name by passing redirect\_field\_name=''.
 
-If we dont set the login_url, Django will use the default /accounts/login from the settings default LOGIN_URL
+If we dont set the login\_url, Django will use the default /accounts/login from the settings default LOGIN\_URL
 
 from auth.mixins
 LoginRequiredMixin Can be used just like it's decorator counterpart, but as a abstraction, just by passing the custom url and 
 redirect as a class parameter.
+There's a function that can do this, takes the same kwargs and the next arg, or the url were the user will be redirected after 
+the login.
 
-We can add tests to the users to see if they are fit to get the request, we can do it with user_passes_test or UserPassesTestMixin.
-They both can take the same parameters as login_required. But it needs the test_function to be passed as well. In the 
-Mixin, you can name a method "test_func", but this can't be stacked. We could change the get_test_func to get another 
-function other than test_func.
+We can add tests to the users to see if they are fit to get the request, we can do it with user\_passes\_test or UserPassesTestMixin.
+They both can take the same parameters as login\_required. But it needs the test\_function to be passed as well. In the 
+Mixin, you can name a method "test\_func", but this can't be stacked. We could change the get\_test\_func to get another 
+function other than test\_func.
 
-There's also a Mixin - Decorator for checking permissions, it takes a permission str, login_url and raise_exception:bool
+There's also a Mixin - Decorator for checking permissions, it takes a permission str, login\_url and raise\_exception:bool
 Everything is just like the others, and then some logic for the permission value. 
-But the raise_exception, returns a 403 (Forbidden), if the user doesn't have the permission.
+But the raise\_exception, returns a 403 (Forbidden), if the user doesn't have the permission.
 
 We can combine all of this into one big Mixin AccessMixin, where we have all of the paramters that we saw before, 
 and then more. The behaviour is: if user is denied access, trow 403. Is anonymous user is denied, send to login or 403.
+
+Whenever we change an user password, his session will be invalidated, and they would have to log in again. 
+In order to avoid doing this. We could use update\_session\_auth\_hash(request, user), from auth module.
+
+Django provides? to us a list of useful Class based Views to test or try the Auth module, which we can include in our 
+urlpatterns by just adding django.contrib.auth.urls. We can change the urls by importing each view, and also 
+we could change the template as well.
+But theres a problemn, It didn't work, while I was trying it. The templates are missing from my python venv.
+So an alternative would be changing them or fixing them somehow.
+There's some of the views templates saved in the django website.
+
+If we don't want to use Views pre made by Django, we could also use the Premade Forms, in auth.forms
+
+The General Problem of these PreMade Auth stuff, is that they have a lot of assumptions about our User Model.
+Which we could change. But we have to set AUTH\_USER\_MODEL
+
+If we opt to use or do our own Templates, we could use authenticated data by using the variable user in 
+the templates.
+
+We can check with is_ authenticated, and then access it's values like an object.
+We can also check for permissions, by using the variable perms, then we can access each app, and its 
+permissions just like an object
+
+We can simple if statements with the variables values, just like a str comparison, or check if 
+a value is in a list, etc.
