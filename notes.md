@@ -6,7 +6,7 @@ start: 12/18/2022
 end: 12/22/2022
 
 User Authentication:
-start: 01/04/2022
+start: 01/04/2023
 end: 
 
 Sessions Django Tutorial:
@@ -17,8 +17,10 @@ Sessions Django Tutorial:
 5. 12/22/2022
 
 Sessions User Authentication:
-1. 01/04/2022
-2. 01/10/2022
+1. 01/04/2023
+2. 01/10/2023
+3. 01/11/2023
+4. 01/12/2023
 
 This notes will include only simple notes about each entry or stuff that I learn about this tool.
 Or stuff that I cant search with 2 or 3 googles searches.
@@ -284,3 +286,67 @@ permissions just like an object
 
 We can simple if statements with the variables values, just like a str comparison, or check if 
 a value is in a list, etc.
+
+## Password Management
+
+How The Passwords are stored in Django is almost a part where we don't even want to change or 
+try something, since everything just works, is secure, and it would be unnecessarily to 
+re invent it.
+
+But we can still see how it works and use it in our projects.
+
+Django stores the passwords in this str format:
+algorithm$iterations$salt$hash
+
+Which are just the components of a hashing algorithm.
+Salt is just random data to hash the password. 
+The algorithm is PBKDF2 with a SHA256 hash which could be iterated for over 300k times.
+
+There's a lot of Password management and Hashing theory, so I will skip over this by now. Since
+probably my projects test will not use such stuff.
+
+But we can change the algorithms and hash processing in a file called hashers.py
+We also have to list first the hash algorithm in the settings variable 
+PASSWORD_HASHERS = []
+
+We can test and manually manage the users passwords using:
+- check_password (password_str, encoded):
+    Auths the user password, with the str version of the password, and 
+    how the password is stored in the db.
+- make_password (password):
+    Creates a password using the hash format that you use in your own app
+- is_password_usable (password)
+    Checks if the user has a password?
+
+## Password Validation
+
+We can add different Password validators in AUTH_PASSWORD_VALIDATORS
+Which is a list of dicts, which can have the NAME of the Validator, and / or 
+some settings of that validator, such as length value, options and others. 
+ 
+Django has some of these Validators by default, these are:
+- MinimumLengthValidator
+- UserAttributeSimilarValidator
+- CommonPasswordValidator
+- NumericPasswordValidator
+
+We can also add Validation to our code by using some functions from 
+auth.password_validation
+
+- validate_password(password)
+    Returns None if the password is valid, Raises a Validation Error if it isn't
+- password_changed(password)
+    Sends an notification to al Validators that that password has been changed.
+    Usefull for some validators.
+- password_validators_help_text
+- password_Validators_help_html:
+    Get some help text of the validator
+- get_passwords_validators:
+    Escencialy, just returns the list of AUTH_PASSWORD_VALIDATORS
+
+We can create our own validator, by just creating a Class and making a validate and get_help_text methods.
+The validate method takes, the password, and the user which can be None by default. 
+It should return nothing or None if the password is validated, ValidationError if it isn't.
+get_help_text, just returns a simple help str
+
+## Auth Deep Customization
