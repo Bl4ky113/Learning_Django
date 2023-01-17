@@ -7,7 +7,7 @@ end: 12/22/2022
 
 User Authentication:
 start: 01/04/2023
-end: 
+end: 01/16/2022
 
 Sessions Django Tutorial:
 1. 12/18/2022
@@ -21,6 +21,8 @@ Sessions User Authentication:
 2. 01/10/2023
 3. 01/11/2023
 4. 01/12/2023
+5. 01/15/2023
+6. 01/16/2023
 
 This notes will include only simple notes about each entry or stuff that I learn about this tool.
 Or stuff that I cant search with 2 or 3 googles searches.
@@ -350,3 +352,95 @@ It should return nothing or None if the password is validated, ValidationError i
 get_help_text, just returns a simple help str
 
 ## Auth Deep Customization
+
+We've talked about custom auth backends for our auth system. 
+If we need to change the Backend Auth, we can modify the list of 
+Auth Backends. AUTHENTICATION_BACKENDS. IF any of the Backends of the 
+lists trows a PermissionDenied, auth will fail.
+
+We can create a Backend by inheriting BaseBackend from auth.backends
+This class must have a get_user(user_id), which returns an User or None.
+And a authenticate method, which takes the http request and the user credentials, ids, passwords, etc.
+It must return just like the get_user, the User or None.
+
+In the custom backend we can also set the way how it process our Permissions. By changing the methods
+get_user/group/all_permissions(), the checkers has_perm, has_module_perms, and with_perm.
+
+If in the checkers the method raises PermissionDenied. The perm is not granted.
+
+There isn't a way to handle and store the permissions of a AnonymousUser, but we can 
+check in our custom backend if the sent user is a AnonymousUser, so we could build a 
+structure to handle their permissions.
+
+Alse we should consider if that our Custom Model of User and Custom Backend, we should handle the 
+is_active variable in order to check if the acount can or can't authenticate.
+
+## Custom Permissions
+
+We can set custom permissions in models by adding to a sub-class Meta list as a tuple with 
+the id and it's name. After adding them, we should run and make migrations in order to 
+get the permissions updated.
+
+Then we can use them with the users by checking if they have then with has_perm.
+
+## Extending the User Model
+
+We can avoid Re-Making the hole User Model, by expanding it's functionalities in two ways.
+
+Proxy or Relational Extra Table - Model. If we want to create a extra behaviour in our Users we could 
+create a extra Model where we can even store more info about our users by doing a OneToOne Relation.
+We can even access this data by getting the User Object, and then accessing the Proxy Model just like an 
+inner User module:
+
+user.proxy_model.values
+
+By doing this we could modify our admin views to see the extra user fields in our user view.
+
+But even if we still need to change the user Model, we can do it by making a class from AbstractUser,
+then register it to admin.py, and set the AUTH_USER_MODEL to the path of our Custom UserModel.
+
+But there's a problem with all of this, if we do it, changing the Models before the first migration, we might run into 
+some problems of general dependency issues, the best is doing it at the beging of the project or we should deal with multiple 
+versions of Errors and stuff. So, no good. 
+That's why we shouldn't use custom UserModels if we are trying to do a custom or reusable app. So there isn't dependency issues when installing one
+or more apps with custom UserModels.
+
+We can still do some of the stuff, and try to change or expand the UserModel, but we should be carefull, and thankfull that we have 
+some tricks to implement such as:
+
+Avoiding using the User Model, but a generic 'get_user_model' function or directly getting the model from the 
+settings.
+
+Even tho if we want to change our UserModel, we should consider if that's the right thing to do in our project and 
+apps. Like we could use a custom model so we don't have to do super special queries and store the data of our app 
+in our UserModel. But this very thing can break, and or bother, the functionality of our apps. 
+Even if we want, or need, we could add diferent ways to authenticate per app. So we don't have to rule and 
+be on one and only auth or backend type on each app of the project.
+
+If after checking and avoiding all of that, we still need or want to do a custom UserModel. 
+Some Properties, and methods we should check and create if we inherit from CustomUser or AbstractBaseUser
+- USERNAME_FIELD
+- EMAIL_FIELD
+- EQUIRED_FIELDS: list that has the names of required fields
+- is_active: bool that depends if the user is active in the sense that can be used, loged or even auth.
+- get_full_name()
+- get_short_name()
+
+I'm Getting tired of these custom stuff that we can or should do if we want to do a custom UserModel.
+This is the complete List of thing to do In order to Change The UserModel correctly.
+
+- Create a new UserClass with all the parameters, attributes, and methods
+- Create a new UserManager with all ...
+- Update or Modify the Forms of Login, Change, And others of the User Values: Passwords, Emails, etc.
+- Register in the Django Admin View the Changes, extra values, and or tables, and everything.
+
+Set the AUTH_USER_MODEL in the settings to our custom UserClass.
+
+Try to do all of this in the begging of the development of the app, since with the DB Migrations, 
+we might run into some nasty reference, and other problems, which need to be fixed manually.
+
+And That Folks, Is the Auth Module of Django!!! It is pretty good, and with a lot 
+to do and learn. This should be tought in the tutorials, or begginers courses, since it is 
+the base of a User Based Project.
+
+But thankfully there's a good guide and full manual available.
